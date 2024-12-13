@@ -11,6 +11,11 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Endpoint de prueba
+app.get("/", (req, res) => {
+    res.json({ status: "ok", message: "Servidor funcionando" });
+});
+
 // Endpoint para mantener la llamada activa sin mensajes
 app.all("/twiml", (req, res) => {
     console.log('TwiML endpoint llamado:', req.method);
